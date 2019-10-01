@@ -182,7 +182,7 @@ def visualize_att(image_path, seq, alphas, rev_word_map, smooth=True):
             plt.imshow(alpha, alpha=0.8)
         plt.set_cmap(cm.Greys_r)
         plt.axis('off')
-    plt.show()
+    plt.savefig(image_path.split("/")[-1][:-4]+'.jpg')
 
 
 if __name__ == '__main__':
