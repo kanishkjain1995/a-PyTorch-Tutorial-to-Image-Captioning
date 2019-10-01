@@ -11,8 +11,8 @@ from utils import *
 from nltk.translate.bleu_score import corpus_bleu
 
 # Data parameters
-data_folder = '/media/ssd/caption data'  # folder with data files saved by create_input_files.py
-data_name = 'coco_5_cap_per_img_5_min_word_freq'  # base name shared by data files
+data_folder = '../data/flickr30k'  # folder with data files saved by create_input_files.py
+data_name = 'flickr30k_5_cap_per_img_5_min_word_freq'  # base name shared by data files
 
 # Model parameters
 emb_dim = 512  # dimension of word embeddings
@@ -35,7 +35,7 @@ alpha_c = 1.  # regularization parameter for 'doubly stochastic attention', as i
 best_bleu4 = 0.  # BLEU-4 score right now
 print_freq = 100  # print training/validation stats every __ batches
 fine_tune_encoder = False  # fine-tune encoder?
-checkpoint = None  # path to checkpoint, None if none
+checkpoint = '../checkpoint_flickr30k_5_cap_per_img_5_min_word_freq.pth.tar'  # path to checkpoint, None if none
 
 
 def main():
@@ -176,8 +176,8 @@ def train(train_loader, encoder, decoder, criterion, encoder_optimizer, decoder_
 
         # Remove timesteps that we didn't decode at, or are pads
         # pack_padded_sequence is an easy trick to do this
-        scores, _ = pack_padded_sequence(scores, decode_lengths, batch_first=True)
-        targets, _ = pack_padded_sequence(targets, decode_lengths, batch_first=True)
+        scores = pack_padded_sequence(scores, decode_lengths, batch_first=True)[0]
+        targets = pack_padded_sequence(targets, decode_lengths, batch_first=True)[0]
 
         # Calculate loss
         loss = criterion(scores, targets)
@@ -267,8 +267,8 @@ def validate(val_loader, encoder, decoder, criterion):
             # Remove timesteps that we didn't decode at, or are pads
             # pack_padded_sequence is an easy trick to do this
             scores_copy = scores.clone()
-            scores, _ = pack_padded_sequence(scores, decode_lengths, batch_first=True)
-            targets, _ = pack_padded_sequence(targets, decode_lengths, batch_first=True)
+            scores = pack_padded_sequence(scores, decode_lengths, batch_first=True)[0]
+            targets = pack_padded_sequence(targets, decode_lengths, batch_first=True)[0]
 
             # Calculate loss
             loss = criterion(scores, targets)
